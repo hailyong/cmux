@@ -9,6 +9,8 @@ struct CmuxExtensionSidebarWorkspaceRowView: View, Equatable {
     let providerId: String
     let relativeNow: Date
     let isSelected: Bool
+    /// When true, the row leads with a procedural planet orb (cosmos sidebar style).
+    var cosmosEnabled: Bool = false
     let onSelect: (UUID) -> Void
     let onOpenWindow: (CmuxExtensionWorkspaceSnapshot) -> Void
     @State private var showsInspector = false
@@ -19,7 +21,8 @@ struct CmuxExtensionSidebarWorkspaceRowView: View, Equatable {
             lhs.workspace == rhs.workspace &&
             lhs.providerId == rhs.providerId &&
             lhs.relativeNow == rhs.relativeNow &&
-            lhs.isSelected == rhs.isSelected
+            lhs.isSelected == rhs.isSelected &&
+            lhs.cosmosEnabled == rhs.cosmosEnabled
     }
 
     private var isSuperCompact: Bool {
@@ -34,6 +37,14 @@ struct CmuxExtensionSidebarWorkspaceRowView: View, Equatable {
         let primarySize: CGFloat = isSuperCompact ? 10.5 : 12.5
         let secondarySize: CGFloat = isSuperCompact ? 9 : 10
         HStack(spacing: isSuperCompact ? 5 : 7) {
+            if cosmosEnabled {
+                PlanetOrbView(
+                    kind: .forWorkspace(row.workspaceId),
+                    diameter: isSuperCompact ? 12 : 16,
+                    isSelected: isSelected,
+                    isWaiting: (workspace?.unreadCount ?? 0) > 0
+                )
+            }
             VStack(alignment: .leading, spacing: isSuperCompact ? 0 : 2) {
                 Text(row.title)
                     .font(.system(size: primarySize, weight: .regular))
@@ -92,7 +103,7 @@ struct CmuxExtensionSidebarWorkspaceRowView: View, Equatable {
                 }
             }
         }
-        .padding(.leading, isSuperCompact ? 14 : 28)
+        .padding(.leading, cosmosEnabled ? (isSuperCompact ? 6 : 10) : (isSuperCompact ? 14 : 28))
         .padding(.trailing, 8)
         .padding(.vertical, isSuperCompact ? 2 : (isThin ? 5 : 7))
         .frame(minHeight: isSuperCompact ? 22 : 32)

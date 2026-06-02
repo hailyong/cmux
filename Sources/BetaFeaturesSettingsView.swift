@@ -2,6 +2,21 @@ import SwiftUI
 
 struct BetaFeaturesSettingsView: View {
     @Binding var dockEnabled: Bool
+    @AppStorage(CosmosSidebarSettings.enabledKey)
+    private var cosmosSidebarEnabled = CosmosSidebarSettings.enabledDefault
+
+    private var cosmosSubtitle: String {
+        if cosmosSidebarEnabled {
+            return String(
+                localized: "settings.betaFeatures.cosmos.subtitleOn",
+                defaultValue: "Renders each workspace as a procedural planet orb; waiting agents pulse a halo."
+            )
+        }
+        return String(
+            localized: "settings.betaFeatures.cosmos.subtitleOff",
+            defaultValue: "Keeps the classic workspace list. Enable for the deep-space planet sidebar."
+        )
+    }
 
     private var dockSubtitle: String {
         if dockEnabled {
@@ -41,6 +56,23 @@ struct BetaFeaturesSettingsView: View {
                     .accessibilityIdentifier("SettingsBetaDockToggle")
                     .accessibilityLabel(
                         String(localized: "settings.betaFeatures.dock", defaultValue: "Dock")
+                    )
+            }
+
+            SettingsCardDivider()
+
+            SettingsCardRow(
+                configurationReview: .settingsOnly,
+                String(localized: "settings.betaFeatures.cosmos", defaultValue: "Cosmos Sidebar"),
+                subtitle: cosmosSubtitle,
+                searchAnchorID: SettingsSearchIndex.settingID(for: .betaFeatures, idSuffix: "cosmos")
+            ) {
+                Toggle("", isOn: $cosmosSidebarEnabled)
+                    .labelsHidden()
+                    .controlSize(.small)
+                    .accessibilityIdentifier("SettingsBetaCosmosToggle")
+                    .accessibilityLabel(
+                        String(localized: "settings.betaFeatures.cosmos", defaultValue: "Cosmos Sidebar")
                     )
             }
         }

@@ -80,6 +80,13 @@ enum WorkspaceAttentionFlashAccent: Equatable, Sendable {
     var strokeColor: NSColor {
         switch self {
         case .notificationBlue:
+            // Cosmos style can override the ring color; unset falls back to
+            // the stock system blue so default behavior is unchanged.
+            if let hex = UserDefaults.standard.string(forKey: CosmosSidebarSettings.ringColorHexKey),
+               !hex.isEmpty,
+               let configured = NSColor(hex: hex) {
+                return configured
+            }
             return .systemBlue
         }
     }
